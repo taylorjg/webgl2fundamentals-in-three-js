@@ -1,12 +1,41 @@
 import * as THREE from 'three'
 import * as dat from 'dat.gui'
 
+const vertexShader = `
+out vec4 v_color;
+
+void main() {
+  // Multiply the position by the matrix.
+  // gl_Position = vec4((u_matrix * vec3(a_position, 1)).xy, 0, 1);
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  gl_Position.z = 0.0;
+
+  // Convert from clipspace to colorspace.
+  // Clipspace goes -1.0 to +1.0
+  // Colorspace goes from 0.0 to 1.0
+  v_color = gl_Position * 0.5 + 0.5;
+}
+`
+
+const fragmentShader = `
+precision highp float;
+
+in vec4 v_color;
+
+out vec4 outColor;
+
+void main() {
+  outColor = v_color;
+}
+`
+
 const main = () => {
   const container = document.getElementById('container')
   const width = container.clientWidth
   const height = container.clientHeight
 
   const renderer = new THREE.WebGLRenderer({ antialias: true })
+  renderer.setClearColor(0xffffff, 1.0)
   renderer.setSize(width, height)
   container.appendChild(renderer.domElement)
 
@@ -22,16 +51,13 @@ const main = () => {
     [-175, 100]
   ]
 
-  const colors = new Float32Array([
-    1.0, 0.0, 0.0, 1.0,
-    0.0, 1.0, 0.0, 1.0,
-    0.0, 0.0, 1.0, 1.0
-  ])
-
   const geometry = new THREE.BufferGeometry()
   geometry.setFromPoints(points.map(([x, y]) => ({ x, y })))
-  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 4))
-  const material = new THREE.MeshBasicMaterial({ vertexColors: true })
+  const material = new THREE.ShaderMaterial({
+    glslVersion: THREE.GLSL3,
+    vertexShader,
+    fragmentShader
+  })
   const mesh = new THREE.Mesh(geometry, material)
   mesh.position.x = 200
   mesh.position.y = 150
