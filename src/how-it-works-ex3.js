@@ -1,30 +1,6 @@
 import * as THREE from "three"
 import * as dat from "dat.gui"
 
-const vertexShader = `
-out vec4 v_color;
-
-void main() {
-  // Multiply the position by the matrix.
-  // gl_Position = vec4((u_matrix * vec3(a_position, 1)).xy, 0, 1);
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-
-  v_color = color;
-}
-`
-
-const fragmentShader = `
-precision highp float;
-
-in vec4 v_color;
-
-out vec4 outColor;
-
-void main() {
-  outColor = v_color;
-}
-`
-
 const main = () => {
   const container = document.getElementById("container")
   const width = container.clientWidth
@@ -63,13 +39,7 @@ const main = () => {
   const geometry = new THREE.BufferGeometry()
   geometry.setFromPoints(points.map(([x, y]) => ({ x, y })))
   geometry.setAttribute("color", new THREE.BufferAttribute(new Float32Array(colors), 4))
-  console.log(geometry)
-  const material = new THREE.ShaderMaterial({
-    glslVersion: THREE.GLSL3,
-    vertexShader,
-    fragmentShader,
-    vertexColors: true
-  })
+  const material = new THREE.MeshBasicMaterial({ vertexColors: true })
   const mesh = new THREE.Mesh(geometry, material)
   mesh.position.x = 200
   mesh.position.y = 150
