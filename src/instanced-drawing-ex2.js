@@ -31,31 +31,39 @@ const main = () => {
   ]
 
   const colors = [
-    [1, 0, 0, 1,],  // red
-    [0, 1, 0, 1,],  // green
-    [0, 0, 1, 1,],  // blue
-    [1, 0, 1, 1,],  // magenta
-    [0, 1, 1, 1,],  // cyan
+    1, 0, 0, // red
+    0, 1, 0, // green
+    0, 0, 1, // blue
+    1, 0, 1, // magenta
+    0, 1, 1, // cyan
   ]
 
   const geometry = new THREE.BufferGeometry()
   geometry.setFromPoints(points.map(([x, y]) => ({ x, y })))
 
+  const material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide })
+
   const numInstances = 5;
-  const meshes = range(numInstances).map(ndx => {
-    const color = new THREE.Color(...colors[ndx])
-    const material = new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide })
-    const mesh = new THREE.Mesh(geometry, material)
-    scene.add(mesh)
-    return mesh
-  })
+  const mesh = new THREE.InstancedMesh(geometry, material, numInstances)
+  mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage)
+  mesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(colors), 3)
+  scene.add(mesh)
+
+  console.log("mesh.instanceMatrix.usage:", mesh.instanceMatrix.usage)
+  console.log("mesh.instanceColor.usage:", mesh.instanceColor.usage)
 
   const render = (time) => {
     time *= 0.001
-    meshes.forEach((mesh, ndx) => {
-      mesh.position.set(-0.5 + ndx * 0.25, 0, 0)
-      mesh.rotation.z = time * (0.1 + 0.1 * ndx)
+    range(numInstances).forEach(ndx => {
+      const matrix = new THREE.Matrix4()
+      const translation = new THREE.Matrix4().makeTranslation(-0.5 + ndx * 0.25, 0, 0)
+      const rotationZ = new THREE.Matrix4().makeRotationZ(time * (0.1 + 0.1 * ndx))
+      matrix
+        .multiply(translation)
+        .multiply(rotationZ)
+      mesh.setMatrixAt(ndx, matrix)
     })
+    mesh.instanceMatrix.needsUpdate = true
     renderer.render(scene, camera)
     requestAnimationFrame(render)
   }
