@@ -23,7 +23,7 @@ const makeEntry = async () => {
 module.exports = async () => {
   const entry = await makeEntry()
   return {
-    mode: 'development',
+    mode: "development",
     entry,
     output: {
       path: BUILD_FOLDER,
@@ -32,7 +32,7 @@ module.exports = async () => {
     plugins: [
       new CopyWebpackPlugin({
         patterns: [
-          { context: './src', from: '*.html' }
+          { context: "./src", from: "*.html" }
         ]
       }),
     ],
@@ -41,10 +41,10 @@ module.exports = async () => {
         // https://webpack.js.org/guides/asset-modules/#source-assets
         {
           test: /\.glsl$/,
-          type: 'asset/source'
+          type: "asset/source"
         }
       ]
     },
-    devtool: 'source-map'
+    devtool: "source-map"
   }
 }

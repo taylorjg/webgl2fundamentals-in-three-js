@@ -1,5 +1,5 @@
-import * as THREE from 'three'
-import * as dat from 'dat.gui'
+import * as THREE from "three"
+import * as dat from "dat.gui"
 
 const vertexShader = `
 out vec4 v_color;
@@ -30,7 +30,7 @@ void main() {
 `
 
 const main = () => {
-  const container = document.getElementById('container')
+  const container = document.getElementById("container")
   const width = container.clientWidth
   const height = container.clientHeight
 
@@ -91,19 +91,19 @@ const main = () => {
     }
 
   const params = {
-    'x': mesh.position.x,
-    'y': mesh.position.y,
-    'angle': THREE.MathUtils.radToDeg(mesh.rotation.z),
-    'scaleX': mesh.scale.x,
-    'scaleY': mesh.scale.y,
+    "x": mesh.position.x,
+    "y": mesh.position.y,
+    "angle": THREE.MathUtils.radToDeg(mesh.rotation.z),
+    "scaleX": mesh.scale.x,
+    "scaleY": mesh.scale.y,
   }
 
   const gui = new dat.GUI()
-  gui.add(params, 'x', 0, width, 1).onChange(updatePosition(0))
-  gui.add(params, 'y', 0, height, 1).onChange(updatePosition(1))
-  gui.add(params, 'angle', 0, 360, 1).onChange(updateAngle)
-  gui.add(params, 'scaleX', -5, 5, 0.01).onChange(updateScale(0))
-  gui.add(params, 'scaleY', -5, 5, 0.01).onChange(updateScale(1))
+  gui.add(params, "x", 0, width, 1).onChange(updatePosition(0))
+  gui.add(params, "y", 0, height, 1).onChange(updatePosition(1))
+  gui.add(params, "angle", 0, 360, 1).onChange(updateAngle)
+  gui.add(params, "scaleX", -5, 5, 0.01).onChange(updateScale(0))
+  gui.add(params, "scaleY", -5, 5, 0.01).onChange(updateScale(1))
   gui.open()
 
   render()
