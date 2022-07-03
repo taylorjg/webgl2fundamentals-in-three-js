@@ -8,9 +8,11 @@ const CopyWebpackPlugin = require("copy-webpack-plugin")
 const SRC_FOLDER = path.resolve(__dirname, "src")
 const BUILD_FOLDER = path.resolve(__dirname, "build")
 
+const EXCLUSIONS = ["utils.js"]
+
 const makeEntry = async () => {
   const files = await fs.readdir(SRC_FOLDER)
-  const filteredFiles = files.filter(file => file.endsWith(".js") && file !== "index.js")
+  const filteredFiles = files.filter(file => file.endsWith(".js") && !EXCLUSIONS.includes(file))
   const entry = Object.fromEntries(filteredFiles.map(file => {
     const key = path.parse(file).name
     const value = path.resolve(SRC_FOLDER, file)
